@@ -7,7 +7,7 @@
 #' @param W covariate data
 #' @param scaleY logical; if TRUE response is centered and scaled before model fit
 #' @param varSelectType type of variable selection to be used: "None" or "BinaryCluster", default is "None" 
-#' @param simnum simulation number for storing output
+#' @param simnum number of output file (.txt files will be saved in the file path paste0("Premium_output/output",simnum)
 #' @param priors prior hyperparameters
 #' @param seed random number seed
 #'
@@ -53,13 +53,9 @@ premium.wrapper <- function(niter, nburn, Y, X, W, scaleY = FALSE, varSelectType
                       fixedEffectNames = sprintf("fixed%d", seq(1, ncol(W))))
   
   preds <- inputs.test$inputData[,-1]
-  
-  # priors <- setHyperparams(shapeAlpha = 2, rateAlpha = 1, 
-  #                           muTheta = 0, sigmaTheta = 2.5, dofTheta = 7,
-  #                           muBeta = 0, sigmaBeta = 2.5, dofBeta = 7,
-  #                           shapeSigmaSqY = 2.5, scaleSigmaSqY = 2.5,
-  #                           aRho = 0.5, bRho = 0.5, mu0 = 0, Tau0 = Lambda, 
-  #                           R0 = R, kappa0 = r)
+
+  # hyper CANNNOT be NULL in profRegr, set some default values if priors is NULL
+  if(is.null(priors)) priors <- list(aRho = 0.5, bRho = 0.5)
   
   # change: let nClusInit be default 7/7/18
   fit.prem <- profRegr(yModel=inputs.test$yModel,
@@ -128,7 +124,7 @@ premium.wrapper <- function(niter, nburn, Y, X, W, scaleY = FALSE, varSelectType
                                    "n", "mean(Y)", "SD(Y)")
 
   # (risk)
-  risk <- er$`posterior mean`[clusters] # average risk for each individual
+  risk <- er$`mean risk`[clusters] # average risk for each individual
   
   # (risk.summary)
   risk.summary <- er[clusters,(1:4)]

@@ -3,7 +3,6 @@
 #' @param Z.best output from bestcluster function
 #'
 #' @return recoded Z
-#' @export
 #'
 
 recode.Z <- function(Z.best){

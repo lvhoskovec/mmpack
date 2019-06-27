@@ -19,6 +19,8 @@
 
 
 simexpodat <- function(n, datX){
+  
+  if(n > 1000) stop("sample size cannot be larger than 1000")
 
   W <- matrix(rnorm(n*10), n, 10)
   samps <- sample(1:1000, n, replace = FALSE)

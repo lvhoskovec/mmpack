@@ -1,10 +1,11 @@
-#' Model Averaging for Profile Regression
+#' Model Average Cluster-Specific Intercepts for Profile Regression
 #'
-#' @param bpr object of type bpr from which Zbest was calculated
+#' computes model averaged cluster-specific intercepts (theta) from supervised or unsupervised Bayesian profile regression model 
+#'
+#' @param bpr object of class bpr 
 #'
 #' @importFrom stats sd quantile
 #' @return summary of model averaged posterior estimates for cluster-specific parameters
-#' @export
 #'
 
 
