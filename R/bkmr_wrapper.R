@@ -23,7 +23,10 @@
 #' @export
 
 
-bkmr.wrapper <- function(niter, nburn, Y, X, W, varsel = FALSE, groups = NULL){
+bkmr_wrapper <- function(niter, nburn, Y, X, W, varsel = FALSE, groups = NULL){
+  
+  if(nburn >= niter) stop("Number of iterations (niter) must be greater than number of burn-in iteractions (nburn)")
+  
   
   fit.bayes <- kmbayes(y = Y, Z = X, X = W, iter = niter, 
                        varsel = varsel, groups = groups, est.h=TRUE)

@@ -43,6 +43,8 @@
 
 npb <- function(niter, nburn, X, Y, W, scaleY = FALSE, priors, interact = FALSE){
   
+  if(nburn >= niter) stop("Number of iterations (niter) must be greater than number of burn-in iteractions (nburn)")
+  
   if(interact == FALSE){
     fit <- npb_main(niter = niter, nburn = nburn, X = X, Y = Y, W = W, 
                     scaleY = scaleY, priors = priors)

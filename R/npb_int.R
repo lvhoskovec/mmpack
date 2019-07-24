@@ -14,11 +14,14 @@
 #' @return list of model estimates, see npb documentation
 
 npb_int <- function(niter, nburn, X, Y, W, scaleY = FALSE, priors){
+  
+  if(nburn >= niter) stop("Number of iterations (niter) must be greater than number of burn-in iteractions (nburn)")
+  
 
   ##########
   # Priors #
   ##########
-
+  
   if(missing(priors)) priors <- NULL
   if(is.null(priors$a.sig)) priors$a.sig <- 1 # shape param for gamma prior on sig2inv
   if(is.null(priors$b.sig)) priors$b.sig <- 1 # rate param for gamma prior on sig2inv
@@ -30,8 +33,13 @@ npb_int <- function(niter, nburn, X, Y, W, scaleY = FALSE, priors){
   if(is.null(priors$alpha.b)) priors$alpha.b <- 1 # rate param for gamma prior on alpha, DP parameter for main effects
   if(is.null(priors$alpha.2.a)) priors$alpha.2.a <- 2 # shape param for gamma prior on alpha.2, DP parameter for interactions
   if(is.null(priors$alpha.2.b)) priors$alpha.2.b <- 1 # rate param for gamma prior on alpha.2, DP parameter for interactions
-  if(is.null(priors$gamma.mn)) priors$mu.gamma <- rep(0, ncol(W)+1) # mean vector for normal prior on covariates
-  if(is.null(priors$gamma.prec)) priors$kap2inv <- rep(1, ncol(W)+1) # precision vector for normal prior on covariates 
+  # intercept
+  if(is.null(priors$mu.0)) priors$mu.0 <- 0 # mean parameter for normal prior on gamma_0, intercept
+  if(is.null(priors$kappa2inv.0)) priors$kappa2inv.0 <- 1 # precision parameter for normal prior on gamma_0, intercept
+  # covariates
+  if(is.null(priors$mu.gamma) & !is.null(W)) priors$mu.gamma <- rep(0, ncol(W)) # mean vector for normal prior on covariates
+  if(is.null(priors$kap2inv)  & !is.null(W)) priors$kap2inv <- rep(1, ncol(W)) # precision vector for normal prior on covariates 
+  # # #
   if(is.null(priors$sig2inv.mu1)) priors$sig2inv.mu1 <- 1 # precision param for normal prior on mean of base distribution for main effects
   if(is.null(priors$sig2inv.mu2)) priors$sig2inv.mu2 <- 1 # precision param for normal prior on mean of base distribution for interactions
   if(is.null(priors$alpha.pi)) priors$alpha.pi <- 1 # shape1 parameter for beta prior on pi0 for main effects
@@ -39,14 +47,22 @@ npb_int <- function(niter, nburn, X, Y, W, scaleY = FALSE, priors){
   if(is.null(priors$alpha.pi2)) priors$alpha.pi2 <- 9 # shape1 parameter for beta prior on pi0 for interactions
   if(is.null(priors$beta.pi2)) priors$beta.pi2 <- 1 # shape2 parameter for beta prior on pi0 for interactions
   
+  if(is.null(W)) {
+    W <- matrix(1, length(Y), 1) # only an intercept if no covariates
+  }else{
+    W <- cbind(1, W) # add an overall intercept to covariates
+  }
+  priors$mu.gamma <- c(priors$mu.0, priors$mu.gamma)
+  priors$kap2inv <- c(priors$kappa2inv.0, priors$kap2inv)
+  
+  
   if(scaleY == TRUE){
     Y.save <- Y
     Y <- scale(Y)
   }else{
     Y.save <- Y
   }
-  
-  W <- cbind(1, W) # add an overall intercept to covariates
+
   
   #######################
   ### Starting values ###

@@ -4,8 +4,8 @@
 #'
 #' @param S allocation variable to update
 #' @param p number of parameters
-#' @param alpha.pi beta prior shape1
-#' @param beta.pi beta prior shape2
+#' @param alpha.pi shape1 parameter for beta prior on pi0
+#' @param beta.pi shape2 parameter for beta prior on pi0
 #' @param beta regression coefficients corresponding to S
 #' @param theta clusters corresponding to S
 #' @param zeta other regression coefficients

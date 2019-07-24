@@ -29,15 +29,16 @@
 #'    \item mu: array of cluster means estimates
 #'    \item psi: cluster weights estimates
 #'    \item Z: cluster indicators at each iteraction
-#'    \item delta: regression coefficient estimates for theta and gamma
+#'    \item delta: regression coefficient estimates for theta (risk) and gamma (fixed effects)
 #'    \item sig2inv: error precision estimates
-#'    \item kap2inv: theta precision estimates
-#'    \item kap2inv.gamma: gamma precision estimates
+#'    \item kap2inv: cluster intercept (risk) precision estimates
+#'    \item phi2inv: fixed effect precision estimates
 #'    \item rho: rho estimates
-#'    \item omega: omega estimates
 #' }
 #' @export
 
+
+# could probably remove DPgamma from the package...
 
 profileReg <- function(niter, nburn, X, Y, W, C = 20,
                        scaleY = FALSE, DPgamma = TRUE,
@@ -45,17 +46,23 @@ profileReg <- function(niter, nburn, X, Y, W, C = 20,
                        priors, 
                        sup = TRUE){
   
+  if(nburn >= niter) stop("Number of iterations (niter) must be greater than number of burn-in iteractions (nburn)")
+  
+  
     ##############
     ### priors ###
     ##############
-    
+    X <- as.matrix(X)
+    W <- as.matrix(W)
+  
+  
     if(missing(priors)) priors <- NULL
     if(is.null(priors$alpha.sig)) priors$alpha.sig <- 2.5 # shape parameter for gamma prior on sig2inv
     if(is.null(priors$beta.sig)) priors$beta.sig <- 2.5 # rate parameter for gamma prior on sig2inv
     if(is.null(priors$alpha.kap)) priors$alpha.kap <- 7/2 # shape parameter for gamma prior on kap2inv, random precision for thetas
     if(is.null(priors$beta.kap)) priors$beta.kap <- 43.75/2 # rate parameter for gamma prior on kap2inv, random precision for thetas
-    if(is.null(priors$alpha.gamma)) priors$alpha.gamma <- 7/2 # shape parameter for gamma prior on kap2inv_gamma, random precision for fixed effects, reflect PReMiuM
-    if(is.null(priors$beta.gamma)) priors$beta.gamma <- 43.75/2 # rate parameter for gamma prior on kap2inv_gamma, random precision for fixed effects, reflect PReMiuM
+    if(is.null(priors$alpha.phi)) priors$alpha.phi <- 7/2 # shape parameter for gamma prior on phi2inv, random precision for fixed effects
+    if(is.null(priors$beta.phi)) priors$beta.phi <- 43.75/2 # rate parameter for gamma prior on phi2inv, random precision for fixed effects
     if(is.null(priors$alpha.alpha)) priors$alpha.alpha <- 2 # shape parameter for gamma prior on alpha
     if(is.null(priors$beta.alpha)) priors$beta.alpha <- 1 # rate parameter for gamma prior on alpha
     if(is.null(priors$nu)) priors$nu <- colMeans(X) # mean parameter for normal prior on mu, vector of exposure profile means
@@ -67,9 +74,6 @@ profileReg <- function(niter, nburn, X, Y, W, C = 20,
     # Lambda is hyperparameter covariance matrix for multivariate mu
     # reflects prior knowledge on how correlated the pollutants are
     # if Lambda is not specified, set it to a diagonal matrix
-    
-    X <- as.matrix(X)
-    W <- as.matrix(W)
     
     p <- ncol(X) # number of predictor variables
     if(is.null(priors$Lambda)) {
@@ -123,8 +127,8 @@ profileReg <- function(niter, nburn, X, Y, W, C = 20,
     delta <- c(theta, gamma) # block parameters
     sig2inv <- 1 # error term precision
     kap2inv <- rep(1, C) # theta precisions
-    kap2inv.gamma <- rep(1, pw) # gamma precisions
-    tau2inv <- c(kap2inv, kap2inv.gamma) # precisions for theta and gamma, theta[c] exists for each cluster
+    phi2inv <- rep(1, pw) # gamma precisions
+    tau2inv <- c(kap2inv, phi2inv) # precisions for theta and gamma, theta[c] exists for each cluster
     
     # variable selection staring values 
     
@@ -151,10 +155,10 @@ profileReg <- function(niter, nburn, X, Y, W, C = 20,
     delta_keep <- matrix(NA, niter, C + pw)
     sig2inv_keep <- rep(NA, niter)
     kap2inv_keep <- matrix(NA, niter, C)
-    kap2inv.gamma_keep <- matrix(NA, niter, pw)
-    # pi.vs_keep <- matrix(NA, niter, p)
+    phi2inv_keep <- matrix(NA, niter, pw)
+    pi.vs_keep <- matrix(NA, niter, p)
     rho_keep <- matrix(NA, niter, p)
-    omega_keep <- matrix(NA, niter, p)
+    # omega_keep <- matrix(NA, niter, p)
     
     ############
     ### MCMC ###
@@ -372,8 +376,8 @@ profileReg <- function(niter, nburn, X, Y, W, C = 20,
       ######################
       
       # precision for gamma
-      kap2inv.gamma <- rgamma(pw, priors$alpha.gamma + .5, 
-                              priors$beta.gamma + .5*(delta[C+1:pw]^2))
+      phi2inv <- rgamma(pw, priors$alpha.phi + .5, 
+                              priors$beta.phi + .5*(delta[C+1:pw]^2))
       # precision for theta
       kap2inv <- rgamma(C, priors$alpha.kap + .5, priors$beta.kap + .5*delta[1:C]^2)
       
@@ -386,7 +390,7 @@ profileReg <- function(niter, nburn, X, Y, W, C = 20,
       #   kap2inv <- rgamma(C, priors$alpha.kap + .5, priors$beta.kap + .5*delta[1:C]^2) # mean 0
       # }
 
-      tau2inv <- c(kap2inv, kap2inv.gamma)
+      tau2inv <- c(kap2inv, phi2inv)
       
       ######################
       ### update sig2inv ###
@@ -406,9 +410,11 @@ profileReg <- function(niter, nburn, X, Y, W, C = 20,
       delta_keep[s,] <- delta
       sig2inv_keep[s] <- sig2inv
       kap2inv_keep[s,] <- tau2inv[1:C]
-      kap2inv.gamma_keep[s,] <- kap2inv.gamma
+      # what would this be anyway? sum or mean? these are cluster-specific but PIPs are model-specific
+      #pi.vs_keep[s,] <- as.numeric(apply(pi.vs, 2, FUN = function(x) sum(x) > 0 ))
+      phi2inv_keep[s,] <- phi2inv
       rho_keep[s,] <- rho
-      omega_keep[s,] <- omega
+      # omega_keep[s,] <- omega # don't need to save this
       
       
     }
@@ -423,9 +429,8 @@ profileReg <- function(niter, nburn, X, Y, W, C = 20,
                   delta = delta_keep[-(1:nburn),],
                   sig2inv = sig2inv_keep[-(1:nburn)],
                   kap2inv = kap2inv_keep[-(1:nburn),],
-                  kap2inv.gamma = kap2inv.gamma_keep[-(1:nburn),],
-                  rho = rho_keep[-(1:nburn),],
-                  omega = omega_keep[-(1:nburn),])
+                  phi2inv = phi2inv_keep[-(1:nburn),],
+                  rho = rho_keep[-(1:nburn),])
     
     class(list1) <- "bpr"
     

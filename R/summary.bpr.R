@@ -6,10 +6,9 @@
 #' \itemize{
 #'      \item exposure.response: cluster means, SD, 0.95 CI, and size, plus mean/SD of repsonse for subjects in each cluster 
 #'      \item risk: mean risk for each subject
-#'      \item cluster.summary: mean, SD of each pollutant in each cluster
-#'      \item cluster.exposures: array of estimated exposure means for each pollutant in each cluster
+#'      \item cluster.summary: array of empirical mean and SD of exposures for individuals assigned to each cluster
 #'      \item risk.summary: mean, SD, and 0.95 CI of cluster-intercept (risk) for each subject
-#'      \item clusters: vector of cluster assignments for each subject from the best clustering  
+#'      \item clusters: vector of most optimal clustering  
 #'      \item risk.distn: distribution of model-averaged cluster-intercepts for each cluster in the best clustering
 #'      \item groupList: list of which subjects belong to which cluster in the best clustering 
 #'      \item rho: posterior mean probability of inclusion for each exposure 
@@ -23,13 +22,14 @@
 summary.bpr <- function(object, ...){
 
   #### model average health effects (i.e. exposure-response function) ####
-  niter <- length(object$alpha)
-  Y <- object$Y
+  niter <- length(object$alpha) # number of iterations after burn-in
+  Y <- object$Y # response
+  X <- object$X
+  n <- length(Y)
   C <- object$C # maximum clusters
-  p <- ncol(object$X) # number of exposures
-  Z_best <- bestcluster(object)
-  Z <- recode.Z(Z_best)
-
+  p <- ncol(X) # number of exposures
+  Z_best <- bestcluster(object) # best clustering of subjects
+  Z <- recode.Z(Z_best) # recoding best clustering to sequential order
   # (risk.distn)
   theta.star <- matrix(modelaves(object)$theta.star, ncol = length(unique(Z)))
   
@@ -67,23 +67,19 @@ summary.bpr <- function(object, ...){
   risk.summary <- er[Z,(1:4)]
   rownames(risk.summary) <- NULL
   
-  # mean and SD for exposures in each cluster
+  
+  # what might be more interesting is the empirical distribution of exposures 
+  # mean,sd of exposures for the individuals assigned to each cluster 
+  
   clusters <- array(NA, dim = c(p, 2, length(unique(Z))), 
                     dimnames = list(paste("exposure", seq(1:p)), c("mean", "SD"),
                                     paste("cluster", seq(1:length(unique(Z))))))
-  
-  # distribution of estimated exposure means for each cluster
-  c <- 1
-  clust.expo.means <- array(NA, dim = c(niter, p, length(unique(Z_best))))
-  for(i in unique(Z_best)){
-    est.sd <- matrix(NA,niter,p)
-    for(s in 1:niter){
-      est.sd[s,] <- sqrt(diag(chol2inv(chol(object$SigInv[s,,,i]))))
-    }
-    clust.expo.means[,,c] <- object$mu[,i,]
-    clusters[,,c] <- matrix(c(apply(object$mu[, i,  ], 2, mean), 
-                              apply(est.sd,2,mean)), ncol = 2, nrow = p)
-    c <- c+1
+  for(c in unique(Z)){
+    
+    Xdata <- matrix(X[which(Z==c),],nrow = length(which(Z==c)),ncol = p)
+    
+    clusters[,1,c] <- apply(Xdata, 2, mean)
+    clusters[,2,c] <- apply(Xdata, 2, sd)
   }
   
   groupList <- list()
@@ -96,7 +92,6 @@ summary.bpr <- function(object, ...){
   
   list1 <- list(exposure.response = er, 
                 risk = risk, cluster.summary = clusters,
-                cluster.exposures = clust.expo.means,
                 risk.summary = risk.summary, 
                 clusters = Z, risk.distn = theta.star,
                 groupList = groupList,

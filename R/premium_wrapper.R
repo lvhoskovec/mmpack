@@ -21,6 +21,7 @@
 #'     \item exposure.response: cluster means, SD, 0.95 CI, and size, plus mean/SD of repsonse for subjects in each cluster  
 #'     \item fitted vals: fitted values for each subject
 #'     \item clusters: vector of most optimal clustering 
+#'     \item cluster.summary: array of empirical mean and SD of exposures for individuals assigned to each cluster
 #'     \item risk distn: distribution of model-averaged cluster-intercepts for each cluster in the best clustering
 #'     \item groupList: list of which subjects are in which group in the most optimal clustering 
 #'     \item riskProfileObj: object of type "riskProfileObj". See PReMiuM documentation for function "calcAvgRiskAndProfile"
@@ -32,8 +33,12 @@
 #' @export
 #'
 
-premium.wrapper <- function(niter, nburn, Y, X, W, scaleY = FALSE, varSelectType = "None", simnum = NULL,
+premium_wrapper <- function(niter, nburn, Y, X, W, scaleY = FALSE, varSelectType = "None", simnum = NULL,
                             priors, seed = NULL){
+  
+  if(nburn >= niter) stop("Number of iterations (niter) must be greater than number of burn-in iteractions (nburn)")
+  
+  p <- ncol(X)
   
   if(scaleY == TRUE){
     Y.save <- Y
@@ -74,13 +79,10 @@ premium.wrapper <- function(niter, nburn, Y, X, W, scaleY = FALSE, varSelectType
   dissimObj <- calcDissimilarityMatrix(fit.prem, onlyLS = TRUE)
   clusObj <- calcOptimalClustering(dissimObj, maxNClusters = 40, useLS = TRUE)
   clusters <- clusObj$clustering
-
   riskProfileObj <- calcAvgRiskAndProfile(clusObj)
-  
-  #plotRiskProfile(riskProfileObj, outFile = "Premium_output/prem.plot")
-  
+
   beta <- read.table(paste0("Premium_output/output",simnum,"_beta.txt"), sep = " ", header = FALSE)
-  Wbeta <- t(W %*% t(beta)) # distribution of Wbeta for each i
+  Wbeta <- t(W %*% t(beta)) # distribution of Wbeta for each individual
   
   if(scaleY == TRUE){
     Wbeta <- Wbeta*sd(Y.save)
@@ -88,7 +90,7 @@ premium.wrapper <- function(niter, nburn, Y, X, W, scaleY = FALSE, varSelectType
   
   Wbeta.hat <- apply(Wbeta, 2, mean)
   
-  # distribution of risk for each cluster (risk.distn)
+  # (risk.distn) estimated risk at each sweep for each cluster 
   theta.star <- matrix(riskProfileObj$risk, ncol = length(unique(clusters)))
   
   if(scaleY == TRUE){
@@ -97,13 +99,12 @@ premium.wrapper <- function(niter, nburn, Y, X, W, scaleY = FALSE, varSelectType
   
   theta <- apply(theta.star, 2, mean)
   
-  fitted.vals <- theta[clusters] + Wbeta.hat
+  fitted.vals <- theta[clusters] + Wbeta.hat # predictions 
 
   count <- rep(0, length(unique(clusters)))
   for(c in 1:length(unique(clusters))){
     count[c] <- length(which(clusters == c))
   }
-  
   
   mean.response <- rep(0, length(unique(clusters)))
   sd.response <- rep(0, length(unique(clusters)))
@@ -133,7 +134,20 @@ premium.wrapper <- function(niter, nburn, Y, X, W, scaleY = FALSE, varSelectType
   if (varSelectType == "BinaryCluster"){
     rho <- summariseVarSelectRho(fit.prem)$rho
   }else rho <- NULL
-
+  
+  # empirical exposure summary for each cluster 
+  # mean, sd of exposures for individuals assigned to each cluster 
+  cluster.summary <- array(NA, dim = c(p, 2, length(unique(clusters))), 
+                    dimnames = list(paste("exposure", seq(1:p)), c("mean", "SD"),
+                                    paste("cluster", seq(1:length(unique(clusters))))))
+  for(c in unique(clusters)){
+    
+    Xdata <- matrix(X[which(clusters==c),],nrow = length(which(clusters==c)),ncol = p)
+    
+    cluster.summary[,1,c] <- apply(Xdata, 2, mean)
+    cluster.summary[,2,c] <- apply(Xdata, 2, sd)
+  }
+  
   
   groupList <- list()
   for (c in 1:length(unique(clusters))){
@@ -145,6 +159,7 @@ premium.wrapper <- function(niter, nburn, Y, X, W, scaleY = FALSE, varSelectType
               rho = rho, risk.summary = risk.summary,
               exposure.response = er,
               fitted.vals = fitted.vals, clusters = clusters,
+              cluster.summary = cluster.summary,
               risk.distn = theta.star,
               groupList = groupList,
               riskProfileObj = riskProfileObj))

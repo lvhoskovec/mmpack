@@ -68,34 +68,18 @@ summary.npb <- function(object,...){
     num.int <- 0
   }
   
-  # risk.distn for each subject 
-  if(is.null(dat) & is.null(dat.int)){
-    # intercept only 
-    post.h <- matrix(rep(object$gamma[,1], n), ncol = n, byrow = FALSE) 
-  }else if(is.null(dat.int)){
-    # intercept + selected.main
-    post.h <- object$gamma[,1] + t(matrix(object$X[, index], ncol = length(index)) %*% t(output))
-  } else if(is.null(dat)){
-    # intercept + selected.int
-    post.h <- object$gamma[,1] + 
-      t(matrix(object$Z[, index.int], ncol = length(index.int)) %*% t(output.int))
-  }else {
-    # intercept + selected.main + selected.int
-    post.h <- object$gamma[,1] + 
-                  t(matrix(object$X[, index], ncol = length(index)) %*% t(output)) +
-                  t(matrix(object$Z[, index.int], ncol = length(index.int)) %*% t(output.int))
-  }
-
-  # risk.summary, risk for each subject
-  if(!is.null(post.h)){
-    posterior.h <- t(apply(post.h, 2, sum.fun))
-    colnames(posterior.h) <- c("Posterior Mean", "SD", "95% CI Lower", "95% CI Upper")
-    h.hat <- posterior.h[,1]
+  # risk.distn for each subject
+  if(!is.null(object$zeta)){
+    post.h <- object$gamma[,1] + t(object$X %*% t(object$beta)) + t(object$Z %*% t(object$zeta))
   }else{
-    posterior.h <- matrix(0, n, ncol = 4)
-    colnames(posterior.h) <- c("Posterior Mean", "SD", "95% CI Lower", "95% CI Upper")
-    h.hat <- rep(0, n)
+    post.h <- object$gamma[,1] + t(object$X %*% t(object$beta))
   }
+  
+  # risk.summary, mean risk for each subject
+  posterior.h <- t(apply(post.h, 2, sum.fun))
+  colnames(posterior.h) <- c("Posterior Mean", "SD", "95% CI Lower", "95% CI Upper")
+  h.hat <- posterior.h[,1]
+
   
   list1 <- list(main.effects = main.effects, interactions = interactions,
                 selected.main = dat, selected.int = dat.int,
