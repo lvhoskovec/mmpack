@@ -1,12 +1,12 @@
 #' Best Clustering by Least Squared Distance to Probability Matrix
 #'
-#' @param bpr object of class bpr
+#' @param bpr object of class bpr; output from function profileReg
 #'
-#' @return vector denoting the best clustering of the data
-#' @export
+#' @return vector denoting the best clustering of the data using least squares distance to a similarity matrix as described in Dahl (2006)
+#' @references Dahl, D. B. (2006). Model-Based Clustering for Expression Data via a Dirichlet Process Mixture Model. Bayesian Inference for Gene Expression and Proteomics, 201–218. https://doi.org/10.1017/CBO9780511584589.011
+#' 
 #'
 
-# changed this so it takes in the output from profile regression function instead
 
 bestcluster <- function(bpr){
   

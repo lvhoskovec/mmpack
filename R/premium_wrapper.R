@@ -77,8 +77,9 @@ premium_wrapper <- function(niter, nburn, Y, X, W, scaleY = FALSE, varSelectType
   # get h.hat from premium
   # postprocessing, check these post-processing steps and parameter options
   dissimObj <- calcDissimilarityMatrix(fit.prem, onlyLS = TRUE)
-  clusObj <- calcOptimalClustering(dissimObj, maxNClusters = 40, useLS = TRUE)
+  clusObj <- calcOptimalClustering(dissimObj, maxNClusters = 20, useLS = TRUE)
   clusters <- clusObj$clustering
+
   riskProfileObj <- calcAvgRiskAndProfile(clusObj)
 
   beta <- read.table(paste0("Premium_output/output",simnum,"_beta.txt"), sep = " ", header = FALSE)

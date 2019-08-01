@@ -25,16 +25,17 @@
 
 bkmr_wrapper <- function(niter, nburn, Y, X, W, varsel = FALSE, groups = NULL){
   
-  if(nburn >= niter) stop("Number of iterations (niter) must be greater than number of burn-in iteractions (nburn)")
+  if(nburn >= niter) stop("Number of iterations (niter) must be greater than number of burn-in iterations (nburn)")
   
   
   fit.bayes <- kmbayes(y = Y, Z = X, X = W, iter = niter, 
                        varsel = varsel, groups = groups, est.h=TRUE)
   
 
-  # the following generates posterior samples from h(x)
-  h.star <- SamplePred(fit = fit.bayes, Znew = NULL, Xnew = NULL, 
-                        Z = X, X = NULL, sel = seq(nburn+1,niter))
+  # the following generates posterior samples of E(Y) = h(x)+ Wgamma, here W = 0
+  h.star <- SamplePred(fit = fit.bayes, Znew = X, 
+                        Xnew = matrix(0, nrow = nrow(W), ncol = ncol(W)), 
+                        sel = seq(nburn+1,niter))
   
   posterior.h <- cbind(apply(h.star,2,mean), 
                        apply(h.star,2,sd),
@@ -51,6 +52,7 @@ bkmr_wrapper <- function(niter, nburn, Y, X, W, varsel = FALSE, groups = NULL){
     pips <- CalcWithinGroupPIPs(fit.bayes, sel = seq(nburn+1, niter))
   }
 
+  # the following generates posterior samples of E(Y) = h(x)+ Wgamma
   samps <- SamplePred(fit.bayes, Znew = X, Xnew = W) # original exposures
   preds <- apply(samps, 2, mean) # posterior predicted values
   

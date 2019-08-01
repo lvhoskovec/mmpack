@@ -1,9 +1,9 @@
 #' Simulate Data for MixModelPack
 #'
-#' function to simulate exposure, covariate, and response data
+#' Function to simulate exposure, covariate, and response data for up to 1000 observations 
 #'
 #' @param n sample size 
-#' @param datX exposure data
+#' @param Xdat Xdat exposure data matrix loaded from package mmpack
 #'
 #' @return list with components
 #' \itemize{
@@ -18,13 +18,13 @@
 #' @export
 
 
-simexpodat <- function(n, datX){
+simexpodat <- function(n, Xdat){
   
   if(n > 1000) stop("sample size cannot be larger than 1000")
 
   W <- matrix(rnorm(n*10), n, 10)
   samps <- sample(1:1000, n, replace = FALSE)
-  X <- datX[samps,]
+  X <- Xdat[samps,]
   gamma <- rnorm(ncol(W), 0, 1)
   e.vec <- sample(1:ncol(X), 4, replace = FALSE)
   a <- e.vec[1]
