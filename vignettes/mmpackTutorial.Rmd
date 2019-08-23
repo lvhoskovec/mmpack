@@ -1,7 +1,7 @@
 ---
 title: "Implementing methods for multipollutant mixtures analyses: mmpack tutorial"
 output: rmarkdown::html_vignette
-date: August 1, 2019
+date: August 23, 2019
 author: Lauren Hoskovec
 vignette: >
   %\VignetteIndexEntry{Implementing methods for multipollutant mixtures: mmpack tutorial}
@@ -13,7 +13,7 @@ vignette: >
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-#Introduction#
+# Introduction #
 
 The R package mmpack implements five Bayesian methods developed for estimating the association between health outcomes and exposures to mixtures of environmental pollutants. These methods include two versions of nonparametric Bayes shrinkage, two versions of Bayesian profile regression, and Bayesian kernel machine regression. The package includes functions to fit each method and post-process the output. In two cases there is existing software to implement the desired methods and mmpack provides a wrapper function to call those existing packages and post-process the output. We will demonstrate each method separately. 
 
