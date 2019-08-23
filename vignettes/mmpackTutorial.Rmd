@@ -21,8 +21,8 @@ The R package mmpack implements five Bayesian methods developed for estimating t
 
 First, load the package:
 
-```{r package, message=FALSE}
-require(devtools) 
+```{r package}
+library(devtools) 
 install_github("lvheck/mmpack")
 library(mmpack)
 ```
@@ -343,7 +343,7 @@ abline(0, 1, col = "red")
 ```
 
 
-The package mmpack also includes a wrapper function, named `premium_wrapper`, to fit SPR using the PReMiuM software. We use the same arguments in `premium_wrapper` as we do in `profileReg` with some minor differences. First, the argument `varSelectType` must be specificed as either `None` for no variable selection or `BinaryCluster` to implement binary cluster variable selection. The user can also specify `simnum` if they want to fit `premium_wrapper` more than once and not overwrite the results. The text file output will then be stored with `simnum` in the file name. The user can also set a seed using the argument `seed`. Last, priors is again an optional list, but the specification is a bit different than in `profileReg`. 
+The package mmpack also includes a wrapper function, named `premium_wrapper`, to fit SPR using the [PReMiuM](https://cran.r-project.org/web/packages/PReMiuM/index.html) software. We use the same arguments in `premium_wrapper` as we do in `profileReg` with some minor differences. First, the argument `varSelectType` must be specificed as either `None` for no variable selection or `BinaryCluster` to implement binary cluster variable selection. The user can also specify `simnum` if they want to fit `premium_wrapper` more than once and not overwrite the results. The text file output will then be stored with `simnum` in the file name. The user can also set a seed using the argument `seed`. Last, priors is again an optional list, but the specification is a bit different than in `profileReg`. 
 
 ```{r fit_prem, eval = FALSE}
 premium_wrapper(niter, nburn, Y, X, W, scaleY = FALSE,
