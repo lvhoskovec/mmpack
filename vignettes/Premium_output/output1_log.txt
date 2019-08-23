@@ -1,0 +1,99 @@
+Date and time: 2019-08-22 15:0322
+
+Data file path: Premium_output/output1_input.txt
+
+Output file path: Premium_output/output1
+
+Prediction file path: Premium_output/output1_predict.txt
+
+Seed: 1234
+
+Number of sweeps: 100
+Burn in sweeps: 100
+Output filter: 1
+Proposal Type: gibbsForVActive, Acceptance Rate: 1
+Proposal Type: gibbsForMuActive, Acceptance Rate: 1
+Proposal Type: gibbsForTauActive, Acceptance Rate: 1
+Proposal Type: gibbsForGammaActive, Acceptance Rate: 1
+Proposal Type: metropolisHastingsForThetaActive, Acceptance Rate: 0.437152
+Proposal Type: metropolisHastingsForBeta, Acceptance Rate: 0.3925
+Proposal Type: metropolisHastingsForAlpha, Acceptance Rate: 0.49
+Proposal Type: gibbsForVInActive, Acceptance Rate: 1
+Proposal Type: gibbsForMuInActive, Acceptance Rate: 1
+Proposal Type: gibbsForTauInActive, Acceptance Rate: 1
+Proposal Type: gibbsForGammaInActive, Acceptance Rate: 1
+Proposal Type: metropolisHastingsForLabels123, Acceptance Rate: 0.895
+Proposal Type: gibbsForThetaInActive, Acceptance Rate: 1
+Proposal Type: metropolisHastingsForRhoOmega, Acceptance Rate: 0.112281
+Proposal Type: gibbsForSigmaSqY, Acceptance Rate: 1
+Proposal Type: gibbsForZ, Acceptance Rate: 1
+Number of subjects: 200
+Number of prediction subjects: 200
+Prediction type: RaoBlackwell
+Sampler type: Truncated 62 clusters
+Number of initial clusters: 52 (Random, Unif[50,60])
+Covariates: 
+	var1
+	var2
+	var3
+	var4
+	var5
+	var6
+FixedEffects: 
+	fixed1
+	fixed2
+	fixed3
+	fixed4
+	fixed5
+	fixed6
+	fixed7
+	fixed8
+	fixed9
+	fixed10
+Model for Y: Normal
+Extra Y variance: False
+Include response: True
+Update alpha: True
+Compute allocation entropy: False
+Model for X: Normal
+Variable selection: BinaryCluster
+
+Hyperparameters:
+shapeAlpha: 2
+rateAlpha: 1
+mu0: 
+-1.87337e-08
+-2.10704e-08
+-1.40352e-08
+ 6.73367e-09
+ 1.34372e-08
+-6.20603e-09
+Tau0:
+0.00740099          0          0          0          0          0
+         0  0.0458386          0          0          0          0
+         0          0    0.06445          0          0          0
+         0          0          0   0.012569          0          0
+         0          0          0          0    0.04723          0
+         0          0          0          0          0  0.0504621
+R0: 
+   0.176489   0.0283987 -0.00611527  -0.0332924  0.00727109  -0.0174898
+  0.0283987    0.360667    0.124155  -0.0309567   -0.138917   -0.144148
+-0.00611527    0.124155    0.385091  -0.0109387   -0.288902    0.153591
+ -0.0332924  -0.0309567  -0.0109387    0.177662   0.0273158 -0.00569443
+ 0.00727109   -0.138917   -0.288902   0.0273158    0.425174   -0.169774
+ -0.0174898   -0.144148    0.153591 -0.00569443   -0.169774    0.380085
+kappa0: 8
+nu0: 0.01
+muTheta: 0
+sigmaTheta: 2.5
+dofTheta: 7
+muBeta: 0
+sigmaBeta: 2.5
+dofBeta: 7
+aRho: 0.5
+bRho: 0.5
+atomRho: 0.5
+shapeSigmaSqY: 1
+scaleSigmaSqY: 1
+
+200 sweeps done in 4 seconds

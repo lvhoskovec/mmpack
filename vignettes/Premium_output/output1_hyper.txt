@@ -1,0 +1,2 @@
+shapeSigmaSqY=1
+scaleSigmaSqY=1

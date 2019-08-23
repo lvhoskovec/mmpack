@@ -1,0 +1,14 @@
+Package: mmpack
+Type: Package
+Title: Methods for multipollutant mixtures analysis
+Version: 0.1.0
+Author: Lauren Hoskovec
+Maintainer: Lauren Hoskovec <lvheck@rams.colostate.edu>
+Description: Implement methods for multipollutant mixtures analyses.
+License: GPL (>= 2)
+Encoding: UTF-8
+LazyData: true
+Imports: matrixcalc, mvtnorm, bkmr, PReMiuM
+Suggests: knitr, rmarkdown, devtools, mmpack, utils
+VignetteBuilder: knitr
+RoxygenNote: 6.1.1
