@@ -21,7 +21,7 @@ The R package mmpack implements five Bayesian methods developed for estimating t
 
 First, load the package:
 
-```{r package}
+```{r package, message=FALSE}
 require(devtools) 
 install_github("lvheck/mmpack")
 library(mmpack)
@@ -416,7 +416,7 @@ groups <- c(1,2,2,1,2,2)
 
 Then we can fit BKMR with hierarchical variable selection.
 
-```{r fit_bkmr, results = "hide"}
+```{r fit_bkmr, results = "hide", message = FALSE}
 fit.bkmr <- bkmr_wrapper(niter = 200, nburn = 100, Y = Y, X = X, W = W, varsel = TRUE,
                          groups = groups)
 ```
