@@ -23,7 +23,7 @@ First, load the package:
 
 ```{r package_install, eval = FALSE}
 library(devtools) 
-install_github("lvheck/mmpack")
+install_github("lvhoskovec/mmpack")
 ```
 
 ```{r package}
