@@ -7,13 +7,14 @@
 #' @param W n by q matrix of covariate data 
 #' @param scaleY logical; if TRUE response will be centered and scaled before model fit
 #' @param priors list of prior hyperparameters
-#'
+#' @param intercept logical; indicates if an overall intercept should be estimated with covariates
+#' 
 #' @importFrom stats var rnorm rbeta runif rgamma
 #' @importFrom utils combn
 #' 
 #' @return list of model estimates, see npb documentation
 
-npb_int <- function(niter, nburn, X, Y, W, scaleY = FALSE, priors){
+npb_int <- function(niter, nburn, X, Y, W, scaleY = FALSE, priors, intercept = TRUE){
   
   if(nburn >= niter) stop("Number of iterations (niter) must be greater than number of burn-in iteractions (nburn)")
   
@@ -47,14 +48,15 @@ npb_int <- function(niter, nburn, X, Y, W, scaleY = FALSE, priors){
   if(is.null(priors$alpha.pi2)) priors$alpha.pi2 <- 9 # shape1 parameter for beta prior on pi0 for interactions
   if(is.null(priors$beta.pi2)) priors$beta.pi2 <- 1 # shape2 parameter for beta prior on pi0 for interactions
   
-  if(is.null(W)) {
-    W <- matrix(1, length(Y), 1) # only an intercept if no covariates
-  }else{
-    W <- cbind(1, W) # add an overall intercept to covariates
+  # if intercept = TRUE add a column of 1's to the covariates
+  if(intercept == TRUE){
+    if(is.null(W)) {
+      W <- matrix(1, length(Y), 1)
+    }else {W <- cbind(1, W)}
+    priors$mu.gamma <- c(priors$mu.0, priors$mu.gamma)
+    priors$kap2inv <- c(priors$kappa2inv.0, priors$kap2inv)
   }
-  priors$mu.gamma <- c(priors$mu.0, priors$mu.gamma)
-  priors$kap2inv <- c(priors$kappa2inv.0, priors$kap2inv)
-  
+  # if intercept = FALSE then we use W as is 
   
   if(scaleY == TRUE){
     Y.save <- Y

@@ -10,6 +10,7 @@
 #' @param scaleY logical; if TRUE response will be centered and scaled before model fit, default is FALSE
 #' @param priors list of prior hyperparameters, see package documentation for details 
 #' @param interact logical; if TRUE (default) include all pairwise interactions of predictors, if FALSE include main effects only
+#' @param intercept logical; indicates if an overall intercept should be estimated with covariates
 #'
 #' @return an object of class "npb", which has the associated methods:
 #' \itemize{
@@ -41,16 +42,16 @@
 #' @export
 #'
 
-npb <- function(niter, nburn, X, Y, W, scaleY = FALSE, priors, interact = FALSE){
+npb <- function(niter, nburn, X, Y, W, scaleY = FALSE, priors, interact = FALSE, intercept = TRUE){
   
   if(nburn >= niter) stop("Number of iterations (niter) must be greater than number of burn-in iteractions (nburn)")
   
   if(interact == FALSE){
     fit <- npb_main(niter = niter, nburn = nburn, X = X, Y = Y, W = W, 
-                    scaleY = scaleY, priors = priors)
+                    scaleY = scaleY, priors = priors, intercept = intercept)
   }else{
     fit <- npb_int(niter = niter, nburn = nburn, X = X, Y = Y, W = W, 
-                   scaleY = scaleY, priors = priors)
+                   scaleY = scaleY, priors = priors, intercept = intercept)
   }
   
   return(fit)

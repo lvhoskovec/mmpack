@@ -4,7 +4,8 @@
 \alias{npb}
 \title{Function to fit nonparametric Bayes shrinkage}
 \usage{
-npb(niter, nburn, X, Y, W, scaleY = FALSE, priors, interact = FALSE)
+npb(niter, nburn, X, Y, W, scaleY = FALSE, priors, interact = FALSE,
+  intercept = TRUE)
 }
 \arguments{
 \item{niter}{number of iterations}
@@ -22,6 +23,8 @@ npb(niter, nburn, X, Y, W, scaleY = FALSE, priors, interact = FALSE)
 \item{priors}{list of prior hyperparameters, see package documentation for details}
 
 \item{interact}{logical; if TRUE (default) include all pairwise interactions of predictors, if FALSE include main effects only}
+
+\item{intercept}{logical; indicates if an overall intercept should be estimated with covariates}
 }
 \value{
 an object of class "npb", which has the associated methods:
