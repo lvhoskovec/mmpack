@@ -257,7 +257,7 @@ npb_main <- function(niter, nburn, X, Y, W, scaleY = FALSE, priors, intercept = 
     beta_keep[s,] <- beta # main effects
     mu_keep[s] <- mu # base mean for D1
     phi2inv_keep[s] <- phi2inv # base precision for D1
-    gamma_keep[s,] <- gamma # covariates
+    if(!is.null(W)) gamma_keep[s,] <- gamma # covariates
     sig2inv_keep[s] <- sig2inv # error
     
   }
