@@ -44,6 +44,7 @@
 
 npb <- function(niter, nburn, X, Y, W, scaleY = FALSE, priors, interact = FALSE, intercept = TRUE){
   
+  
   if(nburn >= niter) stop("Number of iterations (niter) must be greater than number of burn-in iteractions (nburn)")
   
   if(interact == FALSE){
