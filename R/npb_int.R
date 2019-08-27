@@ -70,13 +70,11 @@ npb_int <- function(niter, nburn, X, Y, W, scaleY = FALSE, priors, intercept = T
   ### Starting values ###
   #######################
 
-  X <- as.matrix(X)
-  W <- as.matrix(W)
-
   ################
   # main effects #
   ################
-
+  
+  X <- as.matrix(X)
   p <- ncol(X) # number of pollutants
   n <- length(Y) # sample size
   beta <- rnorm(p) # regression coefficients
@@ -119,8 +117,14 @@ npb_int <- function(niter, nburn, X, Y, W, scaleY = FALSE, priors, intercept = T
   # covariates #
   ##############
 
-  q <- ncol(W) # number of covariates, including overall intercept
-  gamma <- rnorm(q, 0, 1) # regression coefficients 
+  if(!is.null(W)){
+    W <- as.matrix(W)
+    q <- ncol(W) # number of covariates, including overall intercept if there is one 
+    gamma <- rnorm(q) # regression coefficients 
+  }else{
+    q <- 0
+    gamma <- NULL
+  }
 
   #########
   # error #
@@ -142,7 +146,7 @@ npb_int <- function(niter, nburn, X, Y, W, scaleY = FALSE, priors, intercept = T
   mu.2_keep <- rep(NA, niter) # mean of D2
   phi2inv_keep <- rep(NA, niter) # precision of D1
   phi2inv.2_keep <- rep(NA, niter) # precision of D2
-  gamma_keep <- matrix(NA, niter, q) # covariates
+  if(!is.null(W)) gamma_keep <- matrix(NA, niter, q) # covariates
   sig2inv_keep <- rep(NA, niter) # error precison 
   pip.beta <- matrix(NA, niter, p) # beta PIPs
   pip.zeta <- matrix(NA, niter, r) # zeta PIPs
@@ -282,10 +286,18 @@ npb_int <- function(niter, nburn, X, Y, W, scaleY = FALSE, priors, intercept = T
 
     # update delta = c(theta, psi, gamma)
     A <- cbind(XT, ZT, W)
-    m.star <- c(rep(mu, K-1), rep(mu.2, M-1), priors$mu.gamma)
-    v <- chol2inv(chol(sig2inv * crossprod(A) + diag(precision.vector)))
-    m <- v %*% (sig2inv * (t(A)%*%Y) + precision.vector * m.star)
-    delta <- drop(m + t(chol(v)) %*% rnorm(K+M+q-2))
+    if(!is.null(A)){
+      m.star <- c(rep(mu, K-1), rep(mu.2, M-1), priors$mu.gamma)
+      v <- chol2inv(chol(sig2inv * crossprod(A) + 
+                           diag(x=precision.vector, nrow = length(precision.vector))))
+      m <- v %*% (sig2inv * (t(A)%*%Y) + precision.vector * m.star)
+      delta <- drop(m + t(chol(v)) %*% rnorm(K+M+q-2))
+      gamma <- delta[(K+M-1):(K+M+q-2)]
+      Adelta <- A %*% delta
+    }else{
+      Adelta <- 0 # no covariates, no intercept, all regression coefficients are 0 
+    }
+
 
     if(K > 1){
       theta <- delta[1:(K-1)]
@@ -295,7 +307,7 @@ npb_int <- function(niter, nburn, X, Y, W, scaleY = FALSE, priors, intercept = T
       psi <- delta[K:(K+M-2)]
       psi <- c(0, psi)
     }
-    gamma <- delta[(K+M-1):(K+M+q-2)]
+
 
     # update beta deterministically
     beta <- theta[S]
@@ -307,7 +319,7 @@ npb_int <- function(niter, nburn, X, Y, W, scaleY = FALSE, priors, intercept = T
     # update sig2inv #
     ##################
 
-    sig2inv <- rgamma(1, priors$a.sig + n/2, priors$b.sig + .5*sum( (Y - A%*%delta)^2)  )
+    sig2inv <- rgamma(1, priors$a.sig + n/2, priors$b.sig + .5*sum( (Y - Adelta)^2)  )
 
     ##################
     # update phi2inv #
@@ -384,11 +396,19 @@ npb_int <- function(niter, nburn, X, Y, W, scaleY = FALSE, priors, intercept = T
   # unscale the estimates for predict and summary functions
   if(scaleY == TRUE){
     gamma_keep.unscaled <- gamma_keep*sd(Y.save) 
-    gamma_keep.unscaled[,1] <- gamma_keep.unscaled[,1] + mean(Y.save) # overall intercept
+    if(is.null(W)) {
+      gamma_keep.unscaled <- matrix(mean(Y.save), length(Y), 1)
+    }else {
+      gamma_keep.unscaled[,1] <- gamma_keep.unscaled[,1] + mean(Y.save) # overall intercept
+    }
     beta_keep.unscaled <- beta_keep*sd(Y.save)
     zeta_keep.unscaled <- zeta_keep*sd(Y.save)
   }else{
-    gamma_keep.unscaled <- gamma_keep
+    if(is.null(W)){
+      gamma_keep.unscaled <- matrix(0, length(Y), 1) # to avoid later problems in summary and predict
+    }else{
+      gamma_keep.unscaled <- gamma_keep
+    }
     beta_keep.unscaled <- beta_keep
     zeta_keep.unscaled <- zeta_keep
   }

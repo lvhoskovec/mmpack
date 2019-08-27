@@ -34,6 +34,9 @@ update_S <- function(S, p,
 
   n <- length(Y)
   K <- length(theta)
+  if(is.null(W)) {
+    Wgamma <- 0 
+  }else Wgamma <- W %*% gamma 
 
   for(j in 1:p){
 
@@ -68,8 +71,8 @@ update_S <- function(S, p,
 
     # set Ystar for this j
     if(!is.null(Z)){
-    Ystar <- Y - (X[,-j] %*% beta[-j]) - (W %*% gamma) - (Z %*% zeta)
-    }else Ystar <- Y - (X[,-j] %*% beta[-j]) - (W %*% gamma)
+    Ystar <- Y - (X[,-j] %*% beta[-j]) - (Wgamma) - (Z %*% zeta)
+    }else Ystar <- Y - (X[,-j] %*% beta[-j]) - (Wgamma)
 
 
     # 1) Pr(S_j = 0): null group
