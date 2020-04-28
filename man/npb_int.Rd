@@ -5,7 +5,7 @@
 \title{Fit nonparametric Bayes shrinkage model with interactions}
 \usage{
 npb_int(niter, nburn, X, Y, W, scaleY = FALSE, priors,
-  intercept = TRUE)
+  intercept = TRUE, XWinteract = FALSE)
 }
 \arguments{
 \item{niter}{number of iterations}
@@ -23,6 +23,8 @@ npb_int(niter, nburn, X, Y, W, scaleY = FALSE, priors,
 \item{priors}{list of prior hyperparameters}
 
 \item{intercept}{logical; indicates if an overall intercept should be estimated with covariates}
+
+\item{XWinteract}{logical; indiciates in X and W can interact}
 }
 \value{
 list of model estimates, see npb documentation

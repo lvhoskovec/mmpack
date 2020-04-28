@@ -5,7 +5,7 @@
 \title{Function to fit nonparametric Bayes shrinkage}
 \usage{
 npb(niter, nburn, X, Y, W, scaleY = FALSE, priors, interact = FALSE,
-  intercept = TRUE)
+  intercept = TRUE, XWinteract = FALSE)
 }
 \arguments{
 \item{niter}{number of iterations}
@@ -25,6 +25,8 @@ npb(niter, nburn, X, Y, W, scaleY = FALSE, priors, interact = FALSE,
 \item{interact}{logical; if TRUE (default) include all pairwise interactions of predictors, if FALSE include main effects only}
 
 \item{intercept}{logical; indicates if an overall intercept should be estimated with covariates}
+
+\item{XWinteract}{logical; indiciates in X and W can interact}
 }
 \value{
 an object of class "npb", which has the associated methods:

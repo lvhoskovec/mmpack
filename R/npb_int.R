@@ -8,13 +8,15 @@
 #' @param scaleY logical; if TRUE response will be centered and scaled before model fit
 #' @param priors list of prior hyperparameters
 #' @param intercept logical; indicates if an overall intercept should be estimated with covariates
+#' @param XWinteract logical; indiciates in X and W can interact
 #' 
 #' @importFrom stats var rnorm rbeta runif rgamma
 #' @importFrom utils combn
 #' 
 #' @return list of model estimates, see npb documentation
 
-npb_int <- function(niter, nburn, X, Y, W, scaleY = FALSE, priors, intercept = TRUE){
+npb_int <- function(niter, nburn, X, Y, W, scaleY = FALSE, priors, intercept = TRUE,
+                    XWinteract = FALSE){
   
   if(nburn >= niter) stop("Number of iterations (niter) must be greater than number of burn-in iteractions (nburn)")
   
@@ -65,7 +67,6 @@ npb_int <- function(niter, nburn, X, Y, W, scaleY = FALSE, priors, intercept = T
     Y.save <- Y
   }
 
-  
   #######################
   ### Starting values ###
   #######################
@@ -90,6 +91,19 @@ npb_int <- function(niter, nburn, X, Y, W, scaleY = FALSE, priors, intercept = T
   mu <- mean(X %*% beta) # mean for base distribution G1
   alpha <- 1 # DP parameter for main effects
   
+  ##############
+  # covariates #
+  ##############
+  
+  if(!is.null(W)){
+    W <- as.matrix(W)
+    q <- ncol(W) # number of covariates, including overall intercept if there is one 
+    gamma <- rnorm(q) # regression coefficients 
+  }else{
+    q <- 0
+    gamma <- NULL
+  }
+  
   ################
   # interactions #
   ################
@@ -98,6 +112,24 @@ npb_int <- function(niter, nburn, X, Y, W, scaleY = FALSE, priors, intercept = T
   Z <- apply(ints, 2, FUN = function(x) {
     X[,x[1]] * X[,x[2]]
   })
+  
+  ###################################################
+  # if interaction between covariates and exposures #
+  ###################################################
+  
+  # include interaction between exposures X and covariates W
+  if(XWinteract){
+    if(intercept){
+      q.star <- q-1
+    }else{
+      q.star <- q
+    }
+    XWint <- numeric()
+    for(j in 1:p){
+      XWint <- cbind(XWint,   apply(W[,-1], 2, FUN = function(wcol) wcol*X[,j]))
+    }
+    Z <- cbind(Z, XWint)
+  }
 
   r <- ncol(Z) # number of interactions
   zeta <- rnorm(r) # regression coefficients
@@ -113,25 +145,12 @@ npb_int <- function(niter, nburn, X, Y, W, scaleY = FALSE, priors, intercept = T
   mu.2 <- mean(Z %*% zeta) # mean for base distribution G2
   alpha.2 <- 1 # DP parameter for interactions
 
-  ##############
-  # covariates #
-  ##############
-
-  if(!is.null(W)){
-    W <- as.matrix(W)
-    q <- ncol(W) # number of covariates, including overall intercept if there is one 
-    gamma <- rnorm(q) # regression coefficients 
-  }else{
-    q <- 0
-    gamma <- NULL
-  }
-
   #########
   # error #
   #########
 
   sig2inv <- 1 # error precision
-
+  
   #####################
   ### Storage space ###
   #####################
