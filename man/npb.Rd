@@ -26,7 +26,7 @@ npb(niter, nburn, X, Y, W, scaleY = FALSE, priors, interact = FALSE,
 
 \item{intercept}{logical; indicates if an overall intercept should be estimated with covariates}
 
-\item{XWinteract}{logical; indiciates in X and W can interact}
+\item{XWinteract}{logical; indicates if X and W can interact}
 }
 \value{
 an object of class "npb", which has the associated methods:

@@ -8,7 +8,7 @@
 #' @param scaleY logical; if TRUE response will be centered and scaled before model fit
 #' @param priors list of prior hyperparameters
 #' @param intercept logical; indicates if an overall intercept should be estimated with covariates
-#' @param XWinteract logical; indiciates in X and W can interact
+#' @param XWinteract logical; indicates if X and W can interact
 #' 
 #' @importFrom stats var rnorm rbeta runif rgamma
 #' @importFrom utils combn

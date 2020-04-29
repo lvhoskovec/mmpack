@@ -11,7 +11,7 @@
 #' @param priors list of prior hyperparameters, see package documentation for details 
 #' @param interact logical; if TRUE (default) include all pairwise interactions of predictors, if FALSE include main effects only
 #' @param intercept logical; indicates if an overall intercept should be estimated with covariates
-#' @param XWinteract logical; indiciates in X and W can interact
+#' @param XWinteract logical; indicates if X and W can interact
 #'
 #' @return an object of class "npb", which has the associated methods:
 #' \itemize{
@@ -47,6 +47,7 @@ npb <- function(niter, nburn, X, Y, W, scaleY = FALSE, priors, interact = FALSE,
                 XWinteract = FALSE){
   
   if(nburn >= niter) stop("Number of iterations (niter) must be greater than number of burn-in iteractions (nburn)")
+  if(XWinteract == TRUE & interact == FALSE) stop("must have interact=TRUE in order for XWinteract=TRUE")
   
   if(interact == FALSE){
     fit <- npb_main(niter = niter, nburn = nburn, X = X, Y = Y, W = W, 

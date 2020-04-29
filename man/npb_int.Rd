@@ -24,7 +24,7 @@ npb_int(niter, nburn, X, Y, W, scaleY = FALSE, priors,
 
 \item{intercept}{logical; indicates if an overall intercept should be estimated with covariates}
 
-\item{XWinteract}{logical; indiciates in X and W can interact}
+\item{XWinteract}{logical; indicates if X and W can interact}
 }
 \value{
 list of model estimates, see npb documentation
