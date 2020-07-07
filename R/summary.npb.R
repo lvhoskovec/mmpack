@@ -80,11 +80,15 @@ summary.npb <- function(object,...){
   colnames(posterior.h) <- c("Posterior Mean", "SD", "95% CI Lower", "95% CI Upper")
   h.hat <- posterior.h[,1]
 
+  # covariate posterior mean and credible intervals
+  cov.sum <- t(apply(object$gamma, 2, sum.fun))
+  colnames(cov.sum) <- c("Posterior Mean", "SD", "95% CI Lower", "95% CI Upper")
+  
   
   list1 <- list(main.effects = main.effects, interactions = interactions,
                 selected.main = dat, selected.int = dat.int,
                 risk.summary = posterior.h, risk = h.hat,
-                risk.distn = post.h)
+                risk.distn = post.h, covariates = cov.sum)
   class(list1) <- "summary.npb"
   return(list1)
 

@@ -126,7 +126,7 @@ npb_int <- function(niter, nburn, X, Y, W, scaleY = FALSE, priors, intercept = T
     }
     XWint <- numeric()
     for(j in 1:p){
-      XWint <- cbind(XWint,   apply(W[,-1], 2, FUN = function(wcol) wcol*X[,j]))
+      XWint <- cbind(XWint, apply(W[,-1], 2, FUN = function(wcol) wcol*X[,j]))
     }
     Z <- cbind(Z, XWint)
   }
