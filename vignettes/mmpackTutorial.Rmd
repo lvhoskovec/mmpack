@@ -24,6 +24,7 @@ First, load the package:
 ```{r package_install, eval = FALSE}
 library(devtools) 
 install_github("lvhoskovec/mmpack")
+# devtools::install_github("lvhoskovec/mmpack", build_vignettes = TRUE)
 ```
 
 ```{r package}

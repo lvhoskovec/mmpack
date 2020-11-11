@@ -121,14 +121,19 @@ npb_int <- function(niter, nburn, X, Y, W, scaleY = FALSE, priors, intercept = T
   if(XWinteract){
     if(intercept){
       q.star <- q-1
+      XWint <- numeric()
+      for(j in 1:p){
+        XWint <- cbind(XWint, apply(matrix(W[,-1], ncol = q.star), 2, FUN = function(wcol) wcol*X[,j]))
+      }
+      Z <- cbind(Z, XWint)
     }else{
       q.star <- q
+      XWint <- numeric()
+      for(j in 1:p){
+        XWint <- cbind(XWint, apply(matrix(W, ncol = q.star), 2, FUN = function(wcol) wcol*X[,j]))
+      }
+      Z <- cbind(Z, XWint)
     }
-    XWint <- numeric()
-    for(j in 1:p){
-      XWint <- cbind(XWint, apply(W[,-1], 2, FUN = function(wcol) wcol*X[,j]))
-    }
-    Z <- cbind(Z, XWint)
   }
 
   r <- ncol(Z) # number of interactions

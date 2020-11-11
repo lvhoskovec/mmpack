@@ -170,7 +170,6 @@ profileReg <- function(niter, nburn, X, Y, W, C = 20,
       ### update cluster assignments ###
       ##################################
       
-      
       if(sup == FALSE){
         for (c in 1:C){
           tryCatch({
