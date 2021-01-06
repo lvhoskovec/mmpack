@@ -42,6 +42,8 @@ bkmr_wrapper <- function(niter, nburn, Y, X, W, varsel = FALSE, groups = NULL){
                        apply(h.star,2,FUN = function(x) quantile(x, .025)),
                        apply(h.star,2,FUN = function(x) quantile(x, .975)))
   
+  colnames(posterior.h) <- c("mean", "sd", "95% lwr", "95% upr")
+  
   risk <- posterior.h[,1] # posterior mean, estimated exposure response function h
   
   if(is.null(groups)){
