@@ -8,7 +8,12 @@ Description: Implement methods for multipollutant mixtures analyses.
 License: GPL (>= 2)
 Encoding: UTF-8
 LazyData: true
-Imports: matrixcalc, mvtnorm, bkmr, PReMiuM
+Imports: 
+    matrixcalc,
+    mvtnorm,
+    bkmr,
+    PReMiuM,
+    units
 Suggests: knitr, rmarkdown, devtools, mmpack, utils
 VignetteBuilder: knitr
-RoxygenNote: 6.1.1
+RoxygenNote: 7.1.1

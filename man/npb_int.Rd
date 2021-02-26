@@ -4,8 +4,17 @@
 \alias{npb_int}
 \title{Fit nonparametric Bayes shrinkage model with interactions}
 \usage{
-npb_int(niter, nburn, X, Y, W, scaleY = FALSE, priors,
-  intercept = TRUE, XWinteract = FALSE)
+npb_int(
+  niter,
+  nburn,
+  X,
+  Y,
+  W,
+  scaleY = FALSE,
+  priors,
+  intercept = TRUE,
+  XWinteract = FALSE
+)
 }
 \arguments{
 \item{niter}{number of iterations}

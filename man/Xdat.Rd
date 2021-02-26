@@ -4,7 +4,8 @@
 \name{Xdat}
 \alias{Xdat}
 \title{Exposure data}
-\format{A matrix with 1000 rows and 7 columns
+\format{
+A matrix with 1000 rows and 7 columns
 \describe{
   \item{C}{carbamates, kg/(km^2)}
   \item{MeBr}{methyl, bromide kg/(km^2)}
@@ -13,7 +14,8 @@
   \item{O3}{ozone, ppm}
   \item{PM10}{coarse particulate matter, micograms/m^3}
   \item{PM2.5}{fine particulate matter, micograms/m^3}
-}}
+}
+}
 \usage{
 data(Xdat)
 }

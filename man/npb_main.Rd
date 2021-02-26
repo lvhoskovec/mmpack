@@ -4,8 +4,7 @@
 \alias{npb_main}
 \title{Fit nonparametric Bayes shrinkage model with main effects only}
 \usage{
-npb_main(niter, nburn, X, Y, W, scaleY = FALSE, priors,
-  intercept = TRUE)
+npb_main(niter, nburn, X, Y, W, scaleY = FALSE, priors, intercept = TRUE)
 }
 \arguments{
 \item{niter}{number of iterations}

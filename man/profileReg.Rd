@@ -4,8 +4,19 @@
 \alias{profileReg}
 \title{Fit Bayesian profile regression}
 \usage{
-profileReg(niter, nburn, X, Y, W, C = 20, scaleY = FALSE,
-  DPgamma = TRUE, varsel = FALSE, priors, sup = TRUE)
+profileReg(
+  niter,
+  nburn,
+  X,
+  Y,
+  W,
+  C = 20,
+  scaleY = FALSE,
+  DPgamma = TRUE,
+  varsel = FALSE,
+  priors,
+  sup = TRUE
+)
 }
 \arguments{
 \item{niter}{number of total iterations}

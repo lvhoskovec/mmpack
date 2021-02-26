@@ -4,8 +4,18 @@
 \alias{premium_wrapper}
 \title{Wrapper function to fit profile regression model from package PReMiuM}
 \usage{
-premium_wrapper(niter, nburn, Y, X, W, scaleY = FALSE,
-  varSelectType = "None", simnum = NULL, priors, seed = NULL)
+premium_wrapper(
+  niter,
+  nburn,
+  Y,
+  X,
+  W,
+  scaleY = FALSE,
+  varSelectType = "None",
+  simnum = NULL,
+  priors,
+  seed = NULL
+)
 }
 \arguments{
 \item{niter}{number of iterations through sampler}

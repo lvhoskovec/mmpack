@@ -4,8 +4,25 @@
 \alias{update_S}
 \title{Update allocation variables in NPB}
 \usage{
-update_S(S, p, alpha.pi, beta.pi, beta, theta, zeta, Y, W, gamma, X, Z,
-  sig2inv, phi2inv, mu, alpha, iter)
+update_S(
+  S,
+  p,
+  alpha.pi,
+  beta.pi,
+  beta,
+  theta,
+  zeta,
+  Y,
+  W,
+  gamma,
+  X,
+  Z,
+  sig2inv,
+  phi2inv,
+  mu,
+  alpha,
+  iter
+)
 }
 \arguments{
 \item{S}{allocation variable to update}

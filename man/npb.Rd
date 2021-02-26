@@ -4,8 +4,18 @@
 \alias{npb}
 \title{Function to fit nonparametric Bayes shrinkage}
 \usage{
-npb(niter, nburn, X, Y, W, scaleY = FALSE, priors, interact = FALSE,
-  intercept = TRUE, XWinteract = FALSE)
+npb(
+  niter,
+  nburn,
+  X,
+  Y,
+  W,
+  scaleY = FALSE,
+  priors,
+  interact = FALSE,
+  intercept = TRUE,
+  XWinteract = FALSE
+)
 }
 \arguments{
 \item{niter}{number of iterations}
