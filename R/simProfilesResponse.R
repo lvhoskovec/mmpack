@@ -9,6 +9,8 @@
 #'        \item h: evaluation of exposure-response function for each individual 
 #'        \item active: main effects selected to be in the exposure-response function
 #'        \item active.ints: interactions selected to be in the exposure-response function
+#'        \item silhouette: silhouette statistic for clustering observations
+#'        \item gapWidth: gap width statistic for clustering 
 #' }
 #' @export
 
@@ -37,6 +39,24 @@ simProfilesResponse <- function(X, W){
   ints <- combn(1:ncol(X), 2)
   active.ints <- which(colSums(apply(ints, 2, function(x) {x %in% c(a,b)})) == 2)
   
-  return(list(Y=Y, h=h, active = active, active.ints = active.ints))
+  # silhouette
+  clust <- recode.Z(h)
+  d <- dist(X)
+  sil <- silhouette(clust, dist = d)
+  save.sil <- sil[,3]
+  
+  # gap width 
+  FUNcluster <- function(X, k=4){
+    clust = list()
+    clust$cluster = recode.Z(h)
+    return(clust)
+  }
+  FUNcluster(X)
+  gaptab <- clusGap(x=X, FUNcluster = FUNcluster, K.max = 10, B = 500) 
+  gap <- gaptab$Tab[,3]
+  
+  
+  return(list(Y=Y, h=h, active = active, active.ints = active.ints,
+              silhouette = save.sil, gapWidth = gap))
   
 }
