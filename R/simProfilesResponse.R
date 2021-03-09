@@ -9,9 +9,14 @@
 #'        \item h: evaluation of exposure-response function for each individual 
 #'        \item active: main effects selected to be in the exposure-response function
 #'        \item active.ints: interactions selected to be in the exposure-response function
-#'        \item silhouette: silhouette statistic for clustering observations
-#'        \item gapWidth: gap width statistic for clustering 
+#'        \item silhouette: silhouette statistic for clustering each observation
+#'        \item gapWidth: gap width statistic for clustering, considering 1:10 clusters
+#'        \item calinskihara: Calinksi Harabasz index for clustering
 #' }
+#' 
+#' @importFrom stats rnorm 
+#' @importFrom cluster silhouette clusGap
+#' @importFrom fpc calinhara
 #' @export
 
 simProfilesResponse <- function(X, W){
@@ -51,12 +56,14 @@ simProfilesResponse <- function(X, W){
     clust$cluster = recode.Z(h)
     return(clust)
   }
-  FUNcluster(X)
   gaptab <- clusGap(x=X, FUNcluster = FUNcluster, K.max = 10, B = 500) 
   gap <- gaptab$Tab[,3]
   
+  # Calinski Harabasz 
+  ch <- calinhara(x=X,clustering=clust,cn=max(clust))
+  
   
   return(list(Y=Y, h=h, active = active, active.ints = active.ints,
-              silhouette = save.sil, gapWidth = gap))
+              silhouette = save.sil, gapWidth = gap, calinskihara = ch))
   
 }
