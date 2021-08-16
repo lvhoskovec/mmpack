@@ -19,7 +19,17 @@ The R package mmpack implements five Bayesian methods developed for estimating t
 
 ## Package Details ##
 
-First, load the package:
+First, load the following dependencies (use the install.packages command if you haven't already installed them):
+
+```{r}
+library(matrixcalc)
+library(mvtnorm)
+library(bkmr)
+library(PReMiuM)
+library(units)
+```
+
+Then install the package from github:
 
 ```{r package_install, eval = FALSE}
 devtools::install_github("lvhoskovec/mmpack", build_vignettes = TRUE)
