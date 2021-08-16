@@ -1,7 +1,7 @@
 ---
 title: "Implementing methods for multipollutant mixtures analyses: mmpack tutorial"
 output: rmarkdown::html_vignette
-date: August 23, 2019
+date: August 16, 2021
 author: Lauren Hoskovec
 vignette: >
   %\VignetteIndexEntry{Implementing methods for multipollutant mixtures: mmpack tutorial}
@@ -21,7 +21,7 @@ The R package mmpack implements five Bayesian methods developed for estimating t
 
 First, load the following dependencies (use the install.packages command if you haven't already installed them):
 
-```{r}
+```{r, eval = FALSE}
 library(matrixcalc)
 library(mvtnorm)
 library(bkmr)
